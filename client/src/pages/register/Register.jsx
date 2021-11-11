@@ -1,6 +1,35 @@
 import "./register.css";
+import { useRef } from "react";
+import axios from "axios";
+import {useNavigate} from "react-router-dom";
 
 export default function Register() {
+  const username = useRef();
+  const email = useRef();
+  const password = useRef();
+  const passwordAgain = useRef();
+  const navigate = useNavigate();
+
+  const handleClick = async (e) => {
+    e.preventDefault();
+    if(passwordAgain.current.value !== password.current.value) {
+      passwordAgain.current.setCustomValidity("패스워드가 일치하지않습니다.")
+    } else {
+      const user = {
+        username: username.current.value,
+        email: email.current.value,
+        password: password.current.value,
+      }
+      try {
+        await axios.post("/auths/register", user);
+        navigate("/login")
+      } catch(err) {
+
+      }
+      
+    }
+  }
+
   return (
     <div className="login">
       <div className="loginWrapper">
@@ -11,16 +40,16 @@ export default function Register() {
           </span>
         </div>
         <div className="loginRight">
-          <div className="loginBox">
-            <input placeholder="Username" className="loginInput" />
-            <input placeholder="Email" className="loginInput" />
-            <input placeholder="Password" className="loginInput" />
-            <input placeholder="Password Again" className="loginInput" />
-            <button className="loginButton">Sign Up</button>
+          <form className="loginBox" onSubmit={handleClick}>
+            <input placeholder="Username" required ref={username} className="loginInput" />
+            <input placeholder="Email" required ref={email} className="loginInput" type="email"/>
+            <input placeholder="Password" required ref={password} className="loginInput" type="password" minLength="6"/>
+            <input placeholder="Password Again" required ref={passwordAgain} className="loginInput" type="password" minLength="6"/>
+            <button className="loginButton" type="submit">Sign Up</button>
             <button className="loginRegisterButton">
               Log into Account
             </button>
-          </div>
+          </form>
         </div>
       </div>
     </div>
