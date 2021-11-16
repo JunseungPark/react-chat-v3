@@ -2,7 +2,7 @@ const router = require("express").Router();
 const Post = require("../models/Post");
 const User = require("../models/User");
 
-//create a post
+//포스트 만들기
 
 router.post("/", async (req, res) => {
   const newPost = new Post(req.body);
@@ -13,7 +13,7 @@ router.post("/", async (req, res) => {
     res.status(500).json(err);
   }
 });
-//update a post
+//업데이트 포스트
 
 router.put("/:id", async (req, res) => {
   try {
@@ -28,7 +28,8 @@ router.put("/:id", async (req, res) => {
     res.status(500).json(err);
   }
 });
-//delete a post
+
+//포스트 지우기
 
 router.delete("/:id", async (req, res) => {
   try {
@@ -43,8 +44,8 @@ router.delete("/:id", async (req, res) => {
     res.status(500).json(err);
   }
 });
-//like / dislike a post
 
+//포스트 라이크 언라잌크
 router.put("/:id/like", async (req, res) => {
   try {
     const post = await Post.findById(req.params.id);
@@ -59,8 +60,8 @@ router.put("/:id/like", async (req, res) => {
     res.status(500).json(err);
   }
 });
-//get a post
 
+//포스트 가져오기
 router.get("/:id", async (req, res) => {
   try {
     const post = await Post.findById(req.params.id);
@@ -70,8 +71,7 @@ router.get("/:id", async (req, res) => {
   }
 });
 
-//get timeline posts
-
+//타임라인 포스트
 router.get("/timeline/:userId", async (req, res) => {
   try {
     const currentUser = await User.findById(req.params.userId);
@@ -88,7 +88,7 @@ router.get("/timeline/:userId", async (req, res) => {
 });
 
 
-//get users posts
+//로그인한 유저의 포스트
 router.get("/profile/:username", async (req, res) => {
   try {
     const user = await User.findOne({username:req.params.username})
