@@ -2,7 +2,7 @@ const User = require("../models/User");
 const router = require("express").Router();
 const bcrypt = require("bcrypt");
 
-//엄데이트 유저
+//update user
 router.put("/:id", async (req, res) => {
   if (req.body.userId === req.params.id || req.body.isAdmin) {
     if (req.body.password) {
@@ -26,7 +26,7 @@ router.put("/:id", async (req, res) => {
   }
 });
 
-//유저삭제
+//delete user
 router.delete("/:id", async (req, res) => {
   if (req.body.userId === req.params.id || req.body.isAdmin) {
     try {
@@ -40,7 +40,7 @@ router.delete("/:id", async (req, res) => {
   }
 });
 
-//유저 검색
+//get a user
 router.get("/", async (req, res) => {
   const userId = req.query.userId;
   const username = req.query.username;
@@ -55,8 +55,7 @@ router.get("/", async (req, res) => {
   }
 });
 
-
-//친구 목록
+//get friends
 router.get("/friends/:userId", async (req, res) => {
   try {
     const user = await User.findById(req.params.userId);
@@ -76,8 +75,7 @@ router.get("/friends/:userId", async (req, res) => {
   }
 });
 
-
-//퐐로잉
+//follow a user
 
 router.put("/:id/follow", async (req, res) => {
   if (req.body.userId !== req.params.id) {
@@ -99,26 +97,26 @@ router.put("/:id/follow", async (req, res) => {
   }
 });
 
-//언팔로우하기
+//unfollow a user
 
 router.put("/:id/unfollow", async (req, res) => {
-    if (req.body.userId !== req.params.id) {
-      try {
-        const user = await User.findById(req.params.id);
-        const currentUser = await User.findById(req.body.userId);
-        if (user.followers.includes(req.body.userId)) {
-          await user.updateOne({ $pull: { followers: req.body.userId } });
-          await currentUser.updateOne({ $pull: { followings: req.params.id } });
-          res.status(200).json("user has been unfollowed");
-        } else {
-          res.status(403).json("you dont follow this user");
-        }
-      } catch (err) {
-        res.status(500).json(err);
+  if (req.body.userId !== req.params.id) {
+    try {
+      const user = await User.findById(req.params.id);
+      const currentUser = await User.findById(req.body.userId);
+      if (user.followers.includes(req.body.userId)) {
+        await user.updateOne({ $pull: { followers: req.body.userId } });
+        await currentUser.updateOne({ $pull: { followings: req.params.id } });
+        res.status(200).json("user has been unfollowed");
+      } else {
+        res.status(403).json("you dont follow this user");
       }
-    } else {
-      res.status(403).json("you cant unfollow yourself");
+    } catch (err) {
+      res.status(500).json(err);
     }
-  });
+  } else {
+    res.status(403).json("you cant unfollow yourself");
+  }
+});
 
 module.exports = router;
